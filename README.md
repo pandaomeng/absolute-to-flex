@@ -1,6 +1,6 @@
 # 目录
-- [核心处理文件](#核心处理文件)
 - [简介](#简介)
+- [核心处理文件](#核心处理文件)
 - [TodoList](#TodoList)
 - [BUG](#BUG)
 - [自动化修改源代码中的样式](#自动化修改源代码中的样式)
@@ -20,7 +20,8 @@
 - [x] 行与行之间通过原有的 position 信息设置正确的 margin-top
 - [x] 行内 通过他们原来的 position 信息为他们设置正确的 margin-left
 - [x] 如果行内元素高低不齐，对他们做特殊处理
-- [ ] 递归处理 absolute 中的 absolute 元素
+- [x] 递归处理 absolute 中的 absolute 元素
+- [x] 处理 absolute 和非 absolute 元素并存的问题
 - [ ] 如果一个 flex 中只有两个元素，并且他们在容器的两头，设置 justify-content 为 space-between
 
 ## BUG

@@ -1,5 +1,5 @@
 import './App.css';
-import { Button, List, Space, Typography } from 'antd';
+import { Button, List, Space, Typography, message } from 'antd';
 import { convertAbsoluteToFlex } from './utils/convertAbsoluteToFlex';
 import { routes } from './router';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
@@ -11,7 +11,12 @@ function App() {
 
   const doConvert = () => {
     if (!isFlex) {
-      convertAbsoluteToFlex();
+      const containerElement = document.querySelector('.container');
+      if (!containerElement || !(containerElement instanceof HTMLElement)) {
+        message.error('未找到需要转换的区域');
+        return;
+      }
+      convertAbsoluteToFlex(containerElement);
       setIsFlex(true);
     }
   };

@@ -13,19 +13,37 @@ type FlexRow = {
   elements: PositionedElement[]
 } & Position
 
-export const convertAbsoluteToFlex = (): boolean => {
-  // 找到容器中的所有元素
-  const allElements: NodeListOf<HTMLElement> = document.querySelectorAll('.container *');
+/**
+ * 传入一个 targetContainer, 将这个 targetContainer 下的所有 absolute 元素转为 flex
+ * @param targetContainer 
+ * @returns 
+ */
+export const convertAbsoluteToFlex = (targetContainer: HTMLElement): boolean => {
 
-  // 修改原 container 的 display 为 flex
-  const container: HTMLElement | null = document.querySelector('.container');
-  if (!container) return false;
+  // 处理非绝对定位元素的文本内容
+  wrapTextWithSpan(targetContainer);
 
-  const positionedElements = getPositionedElement(allElements)
+  // 给定一个 targetContainer 找到这个 targetContainer 下所有的子元素，只考虑第一层子元素
+  const allChildNodes: NodeListOf<ChildNode> = targetContainer.childNodes;
+
+  const positionedElements = getPositionedElement(allChildNodes)
+  // 递归处理
+  for (let currentNode of allChildNodes) {
+    if (currentNode instanceof HTMLElement) {
+      
+      // 如果 currentNode 下全是文本节点，停止递归
+      const textNodes: Node[] = Array.from(currentNode.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+      if (textNodes.length === currentNode.childNodes.length) {
+        continue
+      }
+
+      convertAbsoluteToFlex(currentNode)
+    }
+  }
 
   const flexRows: FlexRow[] = getFlexRows(positionedElements)
   
-  combineFlexRows(container, flexRows)
+  combineFlexRows(targetContainer, flexRows)
 
   return true;
 };
@@ -85,18 +103,34 @@ const combineFlexRows = (container: HTMLElement, flexRows: FlexRow[]) => {
   };
 }
 
+/**
+ * 将元素的文本内容包装在一个 span 元素中
+ * @param element 
+ */
+const wrapTextWithSpan = (element: HTMLElement) => {
+  const textNodes: Node[] = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+
+  textNodes.forEach(textNode => {
+    const span = document.createElement('span');
+    span.innerText = textNode.textContent || '';
+    element.replaceChild(span, textNode);
+  });
+};
+
 
 /**
  * 过滤出所有的绝对定位的元素，并设置位置属性
  * @param allElements 
  * @returns 
  */
-const getPositionedElement = (allElements: NodeListOf<HTMLElement>) => {
-  // 过滤出所有 absolute 定位的元素
+const getPositionedElement = (allElements: NodeListOf<ChildNode>) => {
+  // 过滤出所有 HTMLElement
   const absoluteElements = Array.from(allElements).filter(element => {
-    const computedStyle = window.getComputedStyle(element);
-    return computedStyle.position === 'absolute';
-  });
+    if (element instanceof HTMLElement) {
+      return true;
+    }
+    return false
+  }) as HTMLElement[];
 
    // 将需要转换的元素都存成 positionedElement 结构
    let positionedElements: PositionedElement[] = absoluteElements.map(element => ({
