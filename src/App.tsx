@@ -46,7 +46,9 @@ function App() {
         <List>
           {routes.map(route => (
             <List.Item key={route.path}>
-              <Link to={route.path}>{route.name}</Link>
+              <Link onClick={doReset} to={route.path}>
+                {route.name}
+              </Link>
             </List.Item>
           ))}
         </List>
