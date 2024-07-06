@@ -1,30 +1,45 @@
-# React + TypeScript + Vite
+# 目录
+- [核心处理文件](#核心处理文件)
+- [简介](#简介)
+- [TodoList](#TodoList)
+- [BUG](#BUG)
+- [自动化修改源代码中的样式](#自动化修改源代码中的样式)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 简介
+将 absolute 布局转换为 flex 布局
+- /src/testcases 下存放测试用例，路由根据 testcases 下的页面自动生成
 
-Currently, two official plugins are available:
+## 核心处理文件
+这是该项目的核心处理文件，负责将绝对定位转换为 Flex 布局。
+[核心处理文件 convertAbsoluteToFlex.ts](https://github.com/pandaomeng/absolute-to-flex/blob/master/src/utils/convertAbsoluteToFlex.ts)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
+## TodoList
+- [ ] 判断一个区域内是否有重叠的 absolute，如果有的话，则无法转为 flex 布局
+- [x] 将需要处理区域的所有元素都拆分到 flex row 中，要求每个 flex row 互不重叠
+- [x] 行与行之间通过原有的 position 信息设置正确的 margin-top
+- [x] 行内 通过他们原来的 position 信息为他们设置正确的 margin-left
+- [ ] 递归处理 absolute 中的 absolute 元素
+- [ ] 如果一个 flex 中只有两个元素，并且他们在容器的两头，设置 justify-content 为 space-between
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## BUG
+- [ ] 转换为 flex 布局后，会有 1px 的偏移，优化 border 的处理 
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+## 自动化修改源代码中的样式
+### 实现思路
+在 convertAbsoluteToFlex 函数中改变元素样式的地方，导出需要改变元素的定位信息，比如 className 和需要改变的 css 属性，
+例如: 
 ```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+[{
+  classNames: ['items', 'items-1'],
+  styles: {
+    display: 'inline-block',
+    boxSizing: 'border-box',
+    top: '',
+    right: '',
+    bottom: '',
+    left: '',
+  }
+}]
+```
+然后通过脚本根据 classNames 等信息去找源码中对应的位置进行替换，实现自动修改。
