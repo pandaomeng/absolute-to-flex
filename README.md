@@ -19,6 +19,7 @@
 - [x] 将需要处理区域的所有元素都拆分到 flex row 中，要求每个 flex row 互不重叠
 - [x] 行与行之间通过原有的 position 信息设置正确的 margin-top
 - [x] 行内 通过他们原来的 position 信息为他们设置正确的 margin-left
+- [x] 如果行内元素高低不齐，对他们做特殊处理
 - [ ] 递归处理 absolute 中的 absolute 元素
 - [ ] 如果一个 flex 中只有两个元素，并且他们在容器的两头，设置 justify-content 为 space-between
 

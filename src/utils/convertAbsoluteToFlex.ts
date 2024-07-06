@@ -60,16 +60,19 @@ const combineFlexRows = (container: HTMLElement, flexRows: FlexRow[]) => {
     rowDiv.style.width = '100%';
     rowDiv.style.justifyContent = 'flex-start';
     rowDiv.style.marginTop = `${flexRow.top - currentBottom}px`
+    rowDiv.style.height = `${flexRow.bottom - flexRow.top}px`
     currentBottom = flexRow.bottom
 
     // 处理行类内每个元素的间距
     let currentRight = positionedContainer.left
+    let rowTop = flexRow.top
     for (let positionedElement of flexRow.elements) {
       let element = positionedElement.element
       element.style.position = 'static';
       element.style.display = 'inline-block';
       element.style.boxSizing = 'border-box';
       element.style.top = '';
+      element.style.marginTop = `${positionedElement.top - rowTop}px`;
       element.style.right = '';
       element.style.bottom = '';
       element.style.left = '';
