@@ -6,7 +6,7 @@ const $ = require('@actions/core');
       case 'master':
         return {
           AWS_S3_BUCKET: 'absolute2flex',
-          AWS_CF_DISTRIBUTION_ID: 'E1HU81K777ZLO0',
+          AWS_CF_DISTRIBUTION_ID: 'E3MBVJK8GBJGDD',
         };
      }
   })();
