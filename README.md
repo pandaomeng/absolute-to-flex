@@ -16,14 +16,18 @@
 
 
 ## TodoList
-- [ ] 判断一个区域内是否有重叠的 absolute，如果有的话，则无法转为 flex 布局
 - [x] 将需要处理区域的所有元素都拆分到 flex row 中，要求每个 flex row 互不重叠
 - [x] 行与行之间通过原有的 position 信息设置正确的 margin-top
 - [x] 行内 通过他们原来的 position 信息为他们设置正确的 margin-left
 - [x] 如果行内元素高低不齐，对他们做特殊处理
 - [x] 递归处理 absolute 中的 absolute 元素
 - [x] 处理 absolute 和非 absolute 元素并存的问题
-- [ ] 如果一个 flex 中只有两个元素，并且他们在容器的两头，设置 justify-content 为 space-between
+- [x] 如果一个 flex 中只有多个元素，并且他们在容器中的距离相同，设置 justify-content 为 space-between，或者 space-around
+- [x] 元素排序结合 top、left 排序
+- [ ] 判断一个区域内是否有重叠的 absolute，如果有的话，使用 z-index 处理
+- [ ] 补充如何判断主轴还是交叉轴的逻辑
+- [ ] 子元素宽度是否可以从固定值改为 flex 自适应模式 ?
+- [ ] 判断是否使用 flex-shrink、flex-warp
 
 ## BUG
 - [x] 转换为 flex 布局后，会有 1px 的偏移，优化 border 的处理 

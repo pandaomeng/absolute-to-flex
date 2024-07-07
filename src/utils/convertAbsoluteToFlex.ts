@@ -64,7 +64,6 @@ const combineFlexRows = (container: HTMLElement, flexRows: FlexRow[]) => {
   container.style.display = 'flex';
   container.style.flexWrap = 'wrap';
   container.style.justifyContent = 'flex-start';
-  container.style.direction = 'column'
   container.innerHTML = '';
 
   // 处理行与行的间距
@@ -73,9 +72,27 @@ const combineFlexRows = (container: HTMLElement, flexRows: FlexRow[]) => {
     const rowDiv = document.createElement('div');
     rowDiv.style.display = 'flex';
     rowDiv.style.width = '100%';
-    rowDiv.style.justifyContent = 'flex-start';
     rowDiv.style.marginTop = `${flexRow.top - currentBottom}px`
     rowDiv.style.height = `${flexRow.bottom - flexRow.top}px`
+    // 设置每一行是 flex-start 还是 space-between 还是 space-around
+    let elementNum = flexRow.elements.length
+    let firstGapWidth = elementNum >= 2 ? flexRow.elements[1].left - flexRow.elements[0].right : 0
+    let i = 1;
+    for (; i < elementNum; i++) {
+      if (flexRow.elements[i].left - flexRow.elements[i-1].right !== firstGapWidth) {
+        rowDiv.style.justifyContent = 'flex-start';
+        break
+      }
+    }
+    if (i == elementNum) {
+      if (flexRow.elements[0].left === positionedContainer.left && flexRow.elements[elementNum - 1].right === positionedContainer.right) {
+        rowDiv.style.justifyContent = 'space-between';
+      } else {
+        rowDiv.style.justifyContent = 'space-around';
+      }
+    }
+
+
     currentBottom = flexRow.bottom
 
     // 处理行类内每个元素的间距
@@ -84,14 +101,15 @@ const combineFlexRows = (container: HTMLElement, flexRows: FlexRow[]) => {
     for (let positionedElement of flexRow.elements) {
       let element = positionedElement.element
       element.style.position = 'static';
-      element.style.display = 'inline-block';
       element.style.boxSizing = 'border-box';
       element.style.top = '';
       element.style.marginTop = `${positionedElement.top - rowTop}px`;
       element.style.right = '';
       element.style.bottom = '';
       element.style.left = '';
-      element.style.marginLeft = `${positionedElement.left - currentRight}px`;
+      if (rowDiv.style.justifyContent === 'flex-start') {
+        element.style.marginLeft = `${positionedElement.left - currentRight}px`;
+      }
       currentRight = positionedElement.right
       rowDiv.appendChild(element);
     }
@@ -99,6 +117,7 @@ const combineFlexRows = (container: HTMLElement, flexRows: FlexRow[]) => {
     container.appendChild(rowDiv);
   };
 }
+
 /**
  * 获取一个容器的内部矩形位置
  * @param element 
@@ -116,6 +135,12 @@ const getInnerBoundingClientRect = (element: HTMLElement) => {
   const borderRightWidth = parseFloat(computedStyle.borderRightWidth);
   const borderBottomWidth = parseFloat(computedStyle.borderBottomWidth);
   const borderLeftWidth = parseFloat(computedStyle.borderLeftWidth);
+
+  // // 获取内边距的宽度
+  // const paddingTop = parseFloat(computedStyle.paddingTop);
+  // const paddingRight = parseFloat(computedStyle.paddingRight);
+  // const paddingBottom = parseFloat(computedStyle.paddingBottom);
+  // const paddingLeft = parseFloat(computedStyle.paddingLeft);
 
   // 计算内边缘位置
   const innerRect = {
@@ -192,7 +217,8 @@ const getFlexRows = (positionedElements: PositionedElement[]): FlexRow[] => {
       currentFlexRow.push(positionedElements[j])
     }
     flexRows.push({
-      elements: currentFlexRow,
+      // 每一行的 flexRows 内部对 left 作排序
+      elements: currentFlexRow.sort((a, b) => a.left - b.left),
       top: positionedElements[i].top,
       bottom: currentBottom,
       left: Math.min(...currentFlexRow.map(each => each.left)),
