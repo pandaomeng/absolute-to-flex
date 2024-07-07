@@ -2,7 +2,7 @@ import './App.css';
 import { Button, List, Space, Typography, message } from 'antd';
 import { convertAbsoluteToFlex } from './utils/convertAbsoluteToFlex';
 import { routes } from './router';
-import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, Routes, Navigate } from 'react-router-dom';
 import React, { useState } from 'react';
 
 function App() {
@@ -55,6 +55,7 @@ function App() {
 
         <React.Suspense fallback={<div>Loading...</div>}>
           <Routes key={resetKey}>
+            <Route path="/" element={<Navigate to={routes[0].path} />} />
             {routes.map(route => (
               <Route key={route.path} path={route.path} element={route.component} />
             ))}
