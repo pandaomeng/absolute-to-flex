@@ -7,7 +7,7 @@
 
 ## 简介
 将 absolute 布局转换为 flex 布局
-在线地址：[http://absolute2flex.s3-website-us-east-1.amazonaws.com](http://absolute2flex.s3-website-us-east-1.amazonaws.com)
+在线地址：[https://absolute2flex.xyz/](https://absolute2flex.xyz/)
 - /src/testcases 下存放测试用例，路由根据 testcases 下的页面自动生成
 
 ## 核心处理文件
