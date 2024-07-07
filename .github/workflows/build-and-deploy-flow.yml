@@ -1,0 +1,61 @@
+name: build_and_deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 22.4.0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - run: pnpm install
+
+      - name: Setup Variables
+        id: variables
+        run: |
+          (cd .github/actions && pnpm install)
+          (cd .github/actions && node setup-variables)
+
+      - name: Build App
+        run: pnpm run build
+    
+      - uses: jakejarvis/s3-sync-action@master
+        name: Upload App to S3 Bucket
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: ${{ steps.variables.outputs.AWS_S3_BUCKET }}
+          AWS_REGION: ${{ steps.variables.outputs.AWS_REGION }}
+          SOURCE_DIR: "dist"
+
+      - name: Update Cloudfront Distribution
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ steps.variables.outputs.AWS_REGION }}
+          AWS_CF_DISTRIBUTION_ID: ${{ steps.variables.outputs.AWS_CF_DISTRIBUTION_ID }}
+
+        run: |
+          (cd .github/actions && pnpm install)
+          (cd .github/actions && node update-cloudfront-distribution)
+
+      - name: Create CloudFront Cache Invalidation
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ steps.variables.outputs.AWS_REGION }}
+          DISTRIBUTION: ${{ steps.variables.outputs.AWS_CF_DISTRIBUTION_ID }}
+          PATHS: "/*"
