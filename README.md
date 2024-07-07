@@ -1,6 +1,7 @@
 # 目录
 - [简介](#简介)
 - [核心处理文件](#核心处理文件)
+- [算法实现逻辑](#算法实现逻辑)
 - [TodoList](#TodoList)
 - [BUG](#BUG)
 - [自动化修改源代码中的样式](#自动化修改源代码中的样式)
@@ -14,6 +15,13 @@
 这是该项目的核心处理文件，负责将绝对定位转换为 Flex 布局。
 [核心处理文件 convertAbsoluteToFlex.ts](https://github.com/pandaomeng/absolute-to-flex/blob/master/src/utils/convertAbsoluteToFlex.ts)
 
+## 算法实现逻辑
+对元素 container 内的所有 absolute 布局，转换为 flex 布局
+1. 考虑 container 中的所有子元素，获得并记录他们的 top/bottom/left/right 信息，这些子元素记作 elements, 对 elements 基于 top 排序，遍历 elements，如果下一个 element 的 top > 当前 element 的 bottom, 则他们应该被分到一个 flex 的行中。
+2. 对于每个 flex row 中的所有元素，基于 left 排序，确保他们水平方向的顺序准确
+3. 分析 flex row 中元素的间距是否相等，如果相等则依据是否紧贴父容器设置 justify-content 为 space-between 或 space-around, 否则设置为 flex-start, 如果为 flex-start，同时要根据元素的 left 信息，计算出 margin-left
+4. 移除原元素的 absolute 相关属性，包括 top/bottom/left/right 属性
+5. 递归处理每个元素，对于每个元素依次执行步骤 1-4
 
 ## TodoList
 - [x] 将需要处理区域的所有元素都拆分到 flex row 中，要求每个 flex row 互不重叠
