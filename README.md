@@ -26,7 +26,7 @@
 - [ ] 如果一个 flex 中只有两个元素，并且他们在容器的两头，设置 justify-content 为 space-between
 
 ## BUG
-- [ ] 转换为 flex 布局后，会有 1px 的偏移，优化 border 的处理 
+- [x] 转换为 flex 布局后，会有 1px 的偏移，优化 border 的处理 
 
 ## 自动化修改源代码中的样式
 ### 实现思路

@@ -58,10 +58,7 @@ const combineFlexRows = (container: HTMLElement, flexRows: FlexRow[]) => {
   // Clear the container's content and recreate flex rows
   const positionedContainer: PositionedElement = {
     element: container,
-    top: container.getBoundingClientRect().top,
-    bottom: container.getBoundingClientRect().bottom,
-    left: container.getBoundingClientRect().left,
-    right: container.getBoundingClientRect().right,
+    ...getInnerBoundingClientRect(container)
   }
 
   container.style.display = 'flex';
@@ -101,6 +98,34 @@ const combineFlexRows = (container: HTMLElement, flexRows: FlexRow[]) => {
 
     container.appendChild(rowDiv);
   };
+}
+/**
+ * 获取一个容器的内部矩形位置
+ * @param element 
+ * @returns 
+ */
+const getInnerBoundingClientRect = (element: HTMLElement) => {
+  // 获取元素的外边缘位置
+  const rect = element.getBoundingClientRect();
+
+  // 获取元素的计算样式
+  const computedStyle = window.getComputedStyle(element);
+
+  // 获取边框的宽度
+  const borderTopWidth = parseFloat(computedStyle.borderTopWidth);
+  const borderRightWidth = parseFloat(computedStyle.borderRightWidth);
+  const borderBottomWidth = parseFloat(computedStyle.borderBottomWidth);
+  const borderLeftWidth = parseFloat(computedStyle.borderLeftWidth);
+
+  // 计算内边缘位置
+  const innerRect = {
+    top: rect.top + borderTopWidth,
+    right: rect.right - borderRightWidth,
+    bottom: rect.bottom - borderBottomWidth,
+    left: rect.left + borderLeftWidth,
+  };
+
+  return innerRect;
 }
 
 /**
