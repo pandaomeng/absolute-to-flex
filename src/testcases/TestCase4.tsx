@@ -7,7 +7,6 @@ const Container = styled.div`
   border: 1px solid #000;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 `;
 
 const Item = styled.div`
